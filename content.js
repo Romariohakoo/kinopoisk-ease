@@ -70,8 +70,7 @@ function createMaterialWidget() {
 
     document.getElementById('watch').addEventListener('click', () => {
         const currentUrl = window.location.href;
-        const newUrl = currentUrl.replace(/(kinopoisk)\.[a-z]+/i, 'sspoisk.ru');
-        window.location.href = newUrl;
+        window.location.href = currentUrl.replace(/(kinopoisk)\.[a-z]+/i, 'sspoisk.ru');
     });
 
     document.getElementById('close').addEventListener('click', () => {
