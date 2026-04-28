@@ -1,0 +1,220 @@
+@font-face {
+  font-family: 'Manrope';
+  src: url('fonts/Manrope/static/Manrope-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('fonts/Manrope/static/Manrope-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Montserrat Alternates';
+  src: url('fonts/Montserrat_Alternates/MontserratAlternates-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('fonts/Roboto/static/Roboto-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+#kp-widget {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background-color: #090D1A;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 1px 6px rgba(0, 0, 0, 0.2);
+  z-index: 999999;
+  overflow: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  color: #E0E2EA;
+  font-family: 'Manrope', sans-serif;
+}
+
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bg-image {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  bottom: -20px;
+  left: 25%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.45;
+}
+
+.bg-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(9, 13, 26, 0.5) 30%, transparent 100%),
+  linear-gradient(to top, rgba(9, 13, 26, 0.7), transparent 100%);
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 20px;
+  padding: 15px;
+  position: relative;
+  z-index: 1;
+  align-items: stretch;
+}
+
+.poster-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.poster-image {
+  width: 100px;
+  height: 150px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-size: cover;
+}
+
+.poster-footer {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+  font-weight: 300;
+}
+
+.media-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+.media-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px
+}
+
+.header-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 4px;
+  margin-top: 0;
+}
+
+.media-info-wrapper {
+  display: flex;
+  gap: 2px;
+  border-radius: 100px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.media-info p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  margin: 0;
+}
+
+.media-info {
+  display: flex;
+  gap: 2px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(20px);
+  align-content: center;
+  font-weight: 400;
+}
+
+.media-info.first {
+  padding: 2px 5px 2px 7px;
+}
+
+.media-info.last {
+  padding: 2px 7px 2px 5px;
+}
+
+.media-description {
+  font-size: 14px;
+  font-weight: 400;
+  max-width: 280px;
+  margin: 0;
+}
+
+.media-button-row {
+  display: flex;
+  gap: 3px;
+  border-radius: 100px;
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  align-items: stretch;
+}
+
+.button {
+  display: flex;
+  gap: 2px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(20px);
+  border: none;
+  font-size: 16px;
+  font-weight: 400;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #E0E2EA;
+}
+
+.button.first {
+  padding: 8px 20px;
+  width: 100%;
+}
+
+.button.last {
+  padding: 0 12px 0 8px;
+}
+
+.close-button {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 15px;
+  right: 15px;
+  border: none;
+  border-radius: 100px;
+  background-color: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(20px);
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 100;
+}
