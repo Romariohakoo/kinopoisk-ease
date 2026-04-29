@@ -55,7 +55,7 @@
   top: -20px;
   right: -20px;
   bottom: -20px;
-  left: 25%;
+  left: -20px;
   background-size: cover;
   background-position: center;
   opacity: 0.45;
@@ -107,7 +107,6 @@
 
 .poster-footer:hover {
   color: white;
-  transform: translateY(-1px);
 }
 
 .media-wrapper {
@@ -135,6 +134,7 @@
   color: white;
   margin-bottom: 4px;
   margin-top: 0;
+  margin-right: 34px;
 }
 
 .media-info-wrapper {
@@ -205,12 +205,11 @@
 
 .button:hover {
   background-color: rgba(255, 255, 255, 0.30);
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .button:active {
-  transform: translateY(1px) scale(0.98);
+  transform: scale(0.98);
   background-color: rgba(255, 255, 255, 0.15);
 }
 
@@ -243,11 +242,10 @@
 
 .close-button:hover {
   background-color: rgba(255, 255, 255, 0.35);
-  transform: rotate(90deg);
 }
 
 .close-button:active {
-  transform: rotate(90deg) scale(0.9);
+  transform: scale(0.9);
 }
 
 @keyframes slideInWidget {
