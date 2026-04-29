@@ -1,13 +1,22 @@
 {
   "manifest_version": 3,
-  "name": "Kinopoisk Ease ",
+  "name": "Kinopoisk Ease",
   "version": "1.0",
   "description": "Удобная плашка для перехода к просмотру фильма",
   "permissions": ["activeTab"],
   "web_accessible_resources": [
     {
-      "resources": ["fonts/**/*.ttf"],
-      "matches": ["*://*.kinopoisk.ru/*", "*://*.kinopoisk.com/*"]
+      "resources": ["fonts/**/*.woff2", "fonts/**/*.ttf"],
+      "matches": [
+        "*://kinopoisk.ru/*",
+        "*://*.kinopoisk.ru/*",
+        "*://kinopoisk.com/*",
+        "*://*.kinopoisk.com/*",
+        "*://kinopoisk.kz/*",
+        "*://*.kinopoisk.kz/*",
+        "*://kinopoisk.by/*",
+        "*://*.kinopoisk.by/*"
+      ]
     }
   ],
   "content_scripts": [
@@ -16,7 +25,11 @@
         "*://*.kinopoisk.ru/film/*",
         "*://*.kinopoisk.com/film/*",
         "*://*.kinopoisk.kz/film/*",
-        "*://*.kinopoisk.by/film/*"
+        "*://*.kinopoisk.by/film/*",
+        "*://kinopoisk.ru/film/*",
+        "*://kinopoisk.com/film/*",
+        "*://kinopoisk.kz/film/*",
+        "*://kinopoisk.by/film/*"
       ],
       "js": ["content.js"],
       "css": ["style.css"]
