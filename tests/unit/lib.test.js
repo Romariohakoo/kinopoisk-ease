@@ -2,6 +2,17 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
     parseTitlePath,
+    parseTitleMeta,
+    describeKind,
+    pluralRu,
+    parseSeasons,
+    formatSeasons,
+    ratingTone,
+    normalizeSettings,
+    normalizeLocal,
+    parseColor,
+    luminance,
+    pickAccent,
     cleanTitle,
     parseRating,
     formatRating,
@@ -121,4 +132,115 @@ test('buildWatchUrl', () => {
         'https://mirror.example/series/464963/',
     );
     assert.equal(buildWatchUrl('мусор', { type: 'film', id: '1' }), 'https://sspoisk.ru/film/1/');
+});
+
+test('parseTitleMeta: годы и тип из хвоста заголовка', () => {
+    assert.deepEqual(parseTitleMeta('Интерстеллар (2014)'), { years: '2014', kindHint: '' });
+    assert.deepEqual(parseTitleMeta('Игра престолов (сериал, 2011 – 2019)'), {
+        years: '2011–2019',
+        kindHint: 'Сериал',
+    });
+    assert.deepEqual(parseTitleMeta('Чернобыль (мини–сериал, 2019)'), { years: '2019', kindHint: 'Мини-сериал' });
+    assert.deepEqual(parseTitleMeta('Что? Где? Когда? (ТВ, 1975 – ...)'), { years: '1975–…', kindHint: 'ТВ-шоу' });
+    assert.deepEqual(parseTitleMeta('Смешарики (мультсериал, 2004 – 2012)'), {
+        years: '2004–2012',
+        kindHint: 'Мультсериал',
+    });
+    assert.deepEqual(parseTitleMeta('Твин Пикс (Twin Peaks, 1990)'), { years: '1990', kindHint: '' });
+    assert.deepEqual(parseTitleMeta('Без года'), { years: '', kindHint: '' });
+});
+
+test('describeKind: жанр важнее подсказки', () => {
+    assert.equal(describeKind({ type: 'film', genre: 'аниме, мультфильм' }), 'Аниме');
+    assert.equal(describeKind({ type: 'series', kindHint: 'Сериал', genre: 'аниме, фэнтези' }), 'Аниме-сериал');
+    assert.equal(describeKind({ type: 'film', genre: 'мультфильм, комедия' }), 'Мультфильм');
+    assert.equal(describeKind({ type: 'series', genre: 'мультфильм' }), 'Мультсериал');
+    assert.equal(describeKind({ type: 'film', genre: 'документальный, спорт' }), 'Документальный');
+    assert.equal(describeKind({ type: 'series', kindHint: 'Мини-сериал', genre: 'драма' }), 'Мини-сериал');
+    assert.equal(describeKind({ type: 'series', genre: '' }), 'Сериал');
+    assert.equal(describeKind({ type: 'film' }), 'Фильм');
+});
+
+test('pluralRu, parseSeasons, formatSeasons', () => {
+    assert.equal(pluralRu(1, 'a', 'b', 'c'), 'a');
+    assert.equal(pluralRu(3, 'a', 'b', 'c'), 'b');
+    assert.equal(pluralRu(11, 'a', 'b', 'c'), 'c');
+    assert.equal(pluralRu(21, 'a', 'b', 'c'), 'a');
+    assert.equal(pluralRu(112, 'a', 'b', 'c'), 'c');
+    assert.equal(parseSeasons('8 сезонов'), 8);
+    assert.equal(parseSeasons('1 сезон, 10 серий'), 1);
+    assert.equal(parseSeasons('Сезоны'), null);
+    assert.equal(formatSeasons(1), '1 сезон');
+    assert.equal(formatSeasons(4), '4 сезона');
+    assert.equal(formatSeasons(8), '8 сезонов');
+    assert.equal(formatSeasons(null), '');
+});
+
+test('ratingTone', () => {
+    assert.equal(ratingTone(8.6), 'good');
+    assert.equal(ratingTone(7), 'good');
+    assert.equal(ratingTone(6.9), 'mid');
+    assert.equal(ratingTone(5), 'mid');
+    assert.equal(ratingTone(4.2), 'bad');
+    assert.equal(ratingTone(null), '');
+});
+
+test('formatDuration для серий', () => {
+    assert.equal(formatDuration(60, { perEpisode: true }), '1 ч / серия');
+    assert.equal(formatDuration(24, { perEpisode: true }), '24 мин / серия');
+});
+
+test('normalizeSettings: значения по умолчанию, проверка и миграция', () => {
+    const defaults = normalizeSettings(undefined);
+    assert.deepEqual(defaults.mirrors, ['sspoisk.ru']);
+    assert.equal(defaults.floating, 'auto');
+    assert.equal(defaults.enabled, true);
+    assert.equal(defaults.hotkey, true);
+
+    assert.deepEqual(normalizeSettings({ mirror: 'https://old.example/' }).mirrors, ['old.example']);
+    assert.deepEqual(normalizeSettings({ mirrors: ['a.example', 'мусор', 'A.example', 'b.example'] }).mirrors, [
+        'a.example',
+        'b.example',
+    ]);
+    assert.deepEqual(normalizeSettings({ mirrors: [] }).mirrors, ['sspoisk.ru']);
+    const odd = normalizeSettings({ floating: 'sometimes', position: 'center', theme: 'pink', enabled: false });
+    assert.equal(odd.floating, 'auto');
+    assert.equal(odd.position, 'bottom-right');
+    assert.equal(odd.theme, 'auto');
+    assert.equal(odd.enabled, false);
+});
+
+test('normalizeLocal: только корректные ключи тайтлов', () => {
+    const local = normalizeLocal({ expanded: 1, hiddenTitles: ['film/1', 'bad', 'series/22', 5] });
+    assert.deepEqual(local, { expanded: true, onboarded: false, hiddenTitles: ['film/1', 'series/22'] });
+});
+
+test('parseColor и luminance', () => {
+    assert.deepEqual(parseColor('rgb(242, 242, 242)'), { r: 242, g: 242, b: 242, a: 1 });
+    assert.deepEqual(parseColor('rgba(0, 0, 0, 0)'), { r: 0, g: 0, b: 0, a: 0 });
+    assert.deepEqual(parseColor('rgb(10 20 30 / 50%)'), { r: 10, g: 20, b: 30, a: 0.5 });
+    assert.equal(parseColor('transparent'), null);
+    assert.ok(luminance({ r: 255, g: 255, b: 255 }) > 0.99);
+    assert.ok(luminance({ r: 18, g: 18, b: 18 }) < 0.01);
+});
+
+function fill(size, rgb) {
+    const pixels = new Uint8ClampedArray(size * size * 4);
+    for (let i = 0; i < pixels.length; i += 4) pixels.set([...rgb, 255], i);
+    return pixels;
+}
+
+test('pickAccent: насыщенный оттенок постера, серый постер — без акцента', () => {
+    const orange = pickAccent(fill(8, [200, 120, 40]));
+    const [r, g, b] = orange.match(/\d+/g).map(Number);
+    assert.ok(r > g && g > b, orange);
+
+    const mixed = fill(8, [30, 30, 30]);
+    for (let i = 0; i < 16 * 4; i += 4) mixed.set([40, 90, 200, 255], i); // четверть синих пикселей
+    const blue = pickAccent(mixed).match(/\d+/g).map(Number);
+    assert.ok(blue[2] > blue[0] && blue[2] > blue[1]);
+
+    assert.equal(pickAccent(fill(8, [128, 128, 128])), null);
+    assert.equal(pickAccent(fill(8, [0, 0, 0])), null);
+    assert.equal(pickAccent(new Uint8ClampedArray(0)), null);
 });

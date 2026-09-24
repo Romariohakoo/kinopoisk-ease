@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Kinopoisk Ease — настройки</title>
+        <link rel="stylesheet" href="options.css" />
+    </head>
+    <body>
+        <main class="page">
+            <header class="header">
+                <img class="logo" src="../icons/icon-48.png" width="32" height="32" alt="" />
+                <div class="header-text">
+                    <h1>Kinopoisk Ease</h1>
+                    <p class="version" id="version"></p>
+                </div>
+                <label class="switch" title="Включить или выключить на Кинопоиске">
+                    <input type="checkbox" id="enabled" />
+                    <span class="switch-track" aria-hidden="true"></span>
+                    <span class="sr-only">Включено на Кинопоиске</span>
+                </label>
+            </header>
+
+            <section class="card" aria-labelledby="mirrors-title">
+                <h2 id="mirrors-title">Зеркала</h2>
+                <p class="muted">Кнопка «Смотреть» ведёт на первое доступное зеркало из списка.</p>
+                <ul class="mirrors" id="mirrors"></ul>
+                <form class="add" id="add-form" novalidate>
+                    <label class="sr-only" for="add-input">Новое зеркало</label>
+                    <input
+                        id="add-input"
+                        type="text"
+                        inputmode="url"
+                        autocomplete="off"
+                        autocapitalize="off"
+                        spellcheck="false"
+                        placeholder="например, mirror.example"
+                        aria-describedby="add-hint"
+                    />
+                    <button type="submit" class="btn">Добавить</button>
+                </form>
+                <p class="hint" id="add-hint" aria-live="polite"></p>
+                <div class="row">
+                    <label class="check">
+                        <input type="checkbox" id="autoFallback" />
+                        <span>Если зеркало недоступно — открывать следующее</span>
+                    </label>
+                    <button type="button" class="btn btn-ghost" id="check-all">Проверить</button>
+                </div>
+            </section>
+
+            <section class="card" aria-labelledby="look-title">
+                <h2 id="look-title">Кнопка и плашка</h2>
+                <label class="check">
+                    <input type="checkbox" id="inlineButton" />
+                    <span>Кнопка «Смотреть» на странице фильма</span>
+                </label>
+                <label class="field">
+                    <span>Плавающая плашка</span>
+                    <select id="floating">
+                        <option value="auto">Когда кнопка на странице не видна</option>
+                        <option value="always">Всегда</option>
+                        <option value="never">Никогда</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>Где показывать</span>
+                    <select id="position">
+                        <option value="bottom-right">Снизу справа</option>
+                        <option value="bottom-left">Снизу слева</option>
+                        <option value="top-right">Сверху справа, под шапкой</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>Тема</span>
+                    <select id="theme">
+                        <option value="auto">Как у сайта</option>
+                        <option value="dark">Тёмная</option>
+                        <option value="light">Светлая</option>
+                    </select>
+                </label>
+                <label class="check">
+                    <input type="checkbox" id="openInNewTab" />
+                    <span>Открывать в новой вкладке</span>
+                </label>
+                <label class="check">
+                    <input type="checkbox" id="hotkey" />
+                    <span>Shift+W — смотреть с клавиатуры</span>
+                </label>
+            </section>
+
+            <section class="card" aria-labelledby="misc-title">
+                <h2 id="misc-title">Прочее</h2>
+                <div class="row">
+                    <span id="hidden-count">Скрытых тайтлов нет</span>
+                    <button type="button" class="btn btn-ghost" id="unhide">Показать снова</button>
+                </div>
+                <div class="row">
+                    <span>Подсказка при первом запуске</span>
+                    <button type="button" class="btn btn-ghost" id="onboarding">Показать ещё раз</button>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <span class="saved" id="saved" aria-live="polite"></span>
+                <a href="https://t.me/iamromariohakoo" target="_blank" rel="noopener noreferrer">by Romariohakoo</a>
+            </footer>
+        </main>
+        <script src="../src/lib.js"></script>
+        <script src="options.js"></script>
+    </body>
+</html>

@@ -31,6 +31,15 @@ button { font-family: Tahoma; font-size: 17px; }
 .kp-progress { position: fixed; top: 0; left: 0; height: 3px; width: 60%; background: #f50; z-index: 20; }
 .links { padding: 0 24px 48px; display: flex; flex-wrap: wrap; gap: 8px 16px; }
 #site-button { margin: 0 24px; }
+.styles_buttonsContainer__r_BdT { display: flex; align-items: center; gap: 8px; margin: 16px 0; }
+.style_button__PNtXT { height: 52px; padding: 0 24px; border: none; border-radius: 52px; background: #e5e5e5; font-weight: bold; }
+.style_buttonWatch__x { background: linear-gradient(135deg, #f50, #d6bb00); color: #fff; }
+#site-search { height: 36px; width: 260px; border-radius: 8px; border: none; padding: 0 12px; }
+`;
+
+const DARK_CSS = `
+body { background: #121212; color: #eee; }
+.style_button__PNtXT { background: #333; color: #eee; }
 `;
 
 // Правила с теми же именами классов, что были у старой плашки (.title, .button…), — проверка изоляции.
@@ -83,7 +92,7 @@ const ROUTER_JS = `
 
 function parseFlags(cookieHeader) {
     const match = /(?:^|;\s*)kpe_fixture=([^;]*)/.exec(cookieHeader || '');
-    const flags = { noid: false, staleid: false, late: false, plain: false, csp: false, spaDelay: 400 };
+    const flags = { noid: false, staleid: false, late: false, plain: false, csp: false, dark: false, spaDelay: 400 };
     if (!match) return flags;
     for (const part of decodeURIComponent(match[1]).split(',')) {
         const [name, value] = part.split('=');
@@ -109,6 +118,7 @@ function header() {
   <a href="/" data-spa>Кинопоиск (фикстура)</a>
   <a href="/lists/movies/top250/" data-spa>Топ-250</a>
   <a href="/name/37859/" data-spa>Персона</a>
+  <input id="site-search" type="search" placeholder="Фильмы, сериалы, персоны" aria-label="Поиск">
 </header>`;
 }
 
@@ -161,6 +171,19 @@ function mainContent(entry, subpage) {
       </div>
       ${subpageNote}
       ${entry.topText ? `<div class="styles_topText__p__5L"><p>${esc(entry.topText)}</p></div>` : ''}
+      ${
+          entry.noButtons
+              ? ''
+              : `<div class="styles_buttonsContainer__r_BdT">
+        <div class="styles_watchButton__x"><button class="style_button__PNtXT style_buttonWatch__x" type="button">Смотреть</button></div>
+        <div class="styles_folderButton__x"><button class="style_button__PNtXT" type="button"><span>Буду смотреть</span></button></div>
+      </div>`
+      }
+      ${
+          entry.seasons
+              ? `<a class="styles_seasonsLink__Ha7ps" href="/series/${entry.id}/episodes/">${entry.seasons} ${entry.seasons === 1 ? 'сезон' : entry.seasons < 5 ? 'сезона' : 'сезонов'}</a>`
+              : ''
+      }
       <h3>О ${entry.type === 'series' ? 'сериале' : 'фильме'}</h3>
       <div data-test-id="encyclopedic-table" class="styles_rootDark__Z6Ag0">
         <div class="styles_rowDark__ucbcz styles_row__da_RK"><div class="styles_titleDark___tfMR">Год производства</div><div class="styles_value__g6yP4 styles_valueDark__BCk93"><a href="/lists/">${esc(entry.year)}</a></div></div>
@@ -178,6 +201,7 @@ function mainContent(entry, subpage) {
     <a href="/${entry.type}/${entry.id}/reviews/" data-spa data-key="reviews">Рецензии</a>
   </nav>
   <button class="button first" id="site-button" type="button">Кнопка сайта</button>
+  <section class="styles_cast__x" aria-label="Актёры и рецензии"><h3>Актёры, рецензии, похожие</h3>${'<p>…</p>'.repeat(40)}</section>
 </main>`;
 }
 
@@ -189,7 +213,7 @@ function page({ title, head = '', body, flags }) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 ${head}
-<style>${SITE_CSS}${flags.plain ? '' : HOSTILE_CSS}</style>
+<style>${SITE_CSS}${flags.dark ? DARK_CSS : ''}${flags.plain ? '' : HOSTILE_CSS}</style>
 </head>
 <body>
 <div id="__next">${body}</div>
@@ -231,7 +255,7 @@ function posterSvg(entry, size) {
     const [from, to] = entry ? entry.palette : ['#333', '#777'];
     const [w, h] = size.split('x').map(Number);
     const label = entry ? esc(entry.title.replace(/<[^>]*>/g, '')) : '';
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 300 450">
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 300 450" preserveAspectRatio="xMidYMid slice">
 <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/></linearGradient></defs>
 <rect width="300" height="450" fill="url(#g)"/>
 <circle cx="230" cy="110" r="70" fill="rgba(255,255,255,0.18)"/>
@@ -250,7 +274,12 @@ async function handleRoute(route) {
     if (url.hostname === 'avatars.mds.yandex.net') {
         const [, , id, size] = url.pathname.split('/').filter(Boolean);
         const entry = TITLES.find((item) => item.id === id);
-        return route.fulfill({ status: 200, contentType: 'image/svg+xml', body: posterSvg(entry, size || '300x450') });
+        return route.fulfill({
+            status: 200,
+            contentType: 'image/svg+xml',
+            headers: { 'access-control-allow-origin': '*' },
+            body: posterSvg(entry, size || '300x450'),
+        });
     }
 
     if (KINOPOISK_HOST.test(url.hostname)) {

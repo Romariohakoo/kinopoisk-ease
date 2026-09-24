@@ -1,0 +1,80 @@
+/* Кнопка «Смотреть на …» внутри страницы фильма. */
+
+:host {
+  all: initial;
+  display: inline-flex;
+  vertical-align: middle;
+
+  --cta-bg: #111318;
+  --cta-fg: #ffffff;
+  --cta-hover: #2a2d36;
+  --focus: #111318;
+}
+
+:host([data-theme='light']) {
+  --cta-bg: #ffffff;
+  --cta-fg: #111318;
+  --cta-hover: #e4e7ef;
+  --focus: #ffffff;
+}
+
+:host([data-placement='block']) {
+  display: flex;
+  margin: 16px 0;
+}
+
+:host([data-placement='append']) {
+  margin-left: 8px;
+}
+
+.inline-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 24px 0 20px;
+  border-radius: 999px;
+  background-color: var(--cta-bg);
+  color: var(--cta-fg);
+  font-family:
+    'KPE Manrope',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Arial,
+    sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.inline-cta:hover {
+  background-color: var(--cta-hover);
+}
+
+.inline-cta:active {
+  transform: scale(0.97);
+}
+
+.inline-cta:focus {
+  outline: none;
+}
+
+.inline-cta:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inline-cta {
+    transition: none;
+  }
+}

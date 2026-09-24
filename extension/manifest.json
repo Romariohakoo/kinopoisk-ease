@@ -1,13 +1,30 @@
 {
   "manifest_version": 3,
   "name": "Kinopoisk Ease",
-  "version": "1.1.0",
-  "description": "Удобная плашка для перехода к просмотру фильма или сериала на Кинопоиске",
+  "version": "1.2.0",
+  "description": "Кнопка «Смотреть» на странице фильма или сериала на Кинопоиске и компактная плавающая плашка",
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "Kinopoisk Ease",
+    "default_popup": "options/options.html?popup",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "src/background.js"
   },
   "permissions": ["storage"],
   "content_scripts": [
@@ -28,13 +45,13 @@
         "*://hd.kinopoisk.kz/*",
         "*://hd.kinopoisk.by/*"
       ],
-      "js": ["src/lib.js", "src/extract.js", "src/widget.js", "src/content.js"],
+      "js": ["src/lib.js", "src/extract.js", "src/ui.js", "src/widget.js", "src/inline.js", "src/content.js"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["fonts/*.woff2", "src/widget.css"],
+      "resources": ["fonts/*.woff2", "src/widget.css", "src/inline.css"],
       "matches": [
         "*://kinopoisk.ru/*",
         "*://*.kinopoisk.ru/*",

@@ -1,6 +1,6 @@
 {
   "name": "kinopoisk-ease",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Браузерное расширение: плашка для быстрого перехода к просмотру фильма или сериала на Кинопоиске",
   "private": true,
   "license": "Apache-2.0",

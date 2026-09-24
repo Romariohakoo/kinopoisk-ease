@@ -1,5 +1,8 @@
 // SPA-переходы: Кинопоиск меняет адрес через history API, а контент подгружает позже.
-const { test, expect, titleUrl, widget, setFlags } = require('./harness');
+const { test, expect, titleUrl, widget, inlineButton, setFlags } = require('./harness');
+
+// Плашка всегда видна и развёрнута, чтобы можно было следить за заголовком на ней.
+test.use({ storage: { sync: { floating: 'always' }, local: { expanded: true } } });
 
 /** Каждые 10 мс записывает в странице пару «адрес → заголовок на плашке». */
 async function startSampling(page) {
@@ -8,7 +11,7 @@ async function startSampling(page) {
         window.__kpeSampler = setInterval(() => {
             const hosts = document.querySelectorAll('kinopoisk-ease-widget');
             const root = hosts[0] && hosts[0].shadowRoot;
-            const title = root && root.querySelector('.surface.card:not(.is-leaving) [data-role="title"]');
+            const title = root && root.querySelector('.surface [data-role="title"]');
             window.__kpeSamples.push({
                 path: location.pathname,
                 title: title ? title.textContent : null,
@@ -52,6 +55,9 @@ for (const [from, to, fromTitle, toTitle, toPath] of [
         expect(samples.some((sample) => sample.path === toPath && sample.title === null)).toBe(true); // был индикатор загрузки
         expect(Math.max(...samples.map((sample) => sample.hosts))).toBe(1);
         await expect(w.watch).toHaveAttribute('href', `https://sspoisk.ru${toPath}`);
+        const inline = inlineButton(page);
+        await expect(inline.link).toHaveAttribute('href', `https://sspoisk.ru${toPath}`);
+        await expect(inline.host).toHaveCount(1);
     });
 }
 
@@ -87,7 +93,7 @@ test('сайт не обновил canonical при переходе: всё р�
 test('сайт перерисовал body и удалил плашку — она возвращается', async ({ page }) => {
     await page.goto(titleUrl('interstellar'));
     const w = widget(page);
-    await expect(w.card).toBeVisible();
+    await expect(w.expanded).toBeVisible();
     await page.evaluate(() => document.querySelector('kinopoisk-ease-widget').remove());
     await expect(w.host).toHaveCount(0);
     await expect(w.title).toHaveText('Интерстеллар');
@@ -114,6 +120,7 @@ test('быстрые переходы подряд: одна плашка с п�
     await expect(w.title).toHaveText('Атака титанов');
     await expect(w.host).toHaveCount(1);
     await expect(w.host.locator('.surface')).toHaveCount(1);
+    await expect(inlineButton(page).host).toHaveCount(1);
     await expect(w.watch).toHaveAttribute('href', 'https://sspoisk.ru/series/749374/');
 });
 
@@ -133,7 +140,7 @@ test('кнопка «Назад» возвращает плашку прошло
 test('уход на страницу не-фильма убирает плашку, возврат — показывает', async ({ page }) => {
     await page.goto(titleUrl('interstellar'));
     const w = widget(page);
-    await expect(w.card).toBeVisible();
+    await expect(w.expanded).toBeVisible();
 
     await page.locator('header a[href="/"]').click();
     await expect(page).toHaveURL('https://www.kinopoisk.ru/');
@@ -157,12 +164,12 @@ test('SPA-переход с главной на фильм (скрипт заг�
 test('переход между вкладками одного фильма не перерисовывает плашку', async ({ page }) => {
     await page.goto(titleUrl('interstellar'));
     const w = widget(page);
-    await expect(w.card).toBeVisible();
-    await w.host.evaluate((host) => host.shadowRoot.querySelector('.surface').setAttribute('data-mark', 'same'));
+    await expect(w.expanded).toBeVisible();
+    await w.host.evaluate((host) => host.shadowRoot.querySelector('.view').setAttribute('data-mark', 'same'));
 
     await page.locator('#__next a[data-key="reviews"]').click();
     await expect(page).toHaveURL(/\/film\/258687\/reviews\/$/);
     await page.waitForTimeout(1200);
-    await expect(w.host.locator('.surface[data-mark="same"]')).toHaveCount(1);
+    await expect(w.host.locator('.view[data-mark="same"]')).toHaveCount(1);
     await expect(w.watch).toHaveAttribute('href', 'https://sspoisk.ru/film/258687/');
 });

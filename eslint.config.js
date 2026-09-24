@@ -14,12 +14,16 @@ module.exports = [
         },
     },
     {
+        files: ['extension/src/background.js'],
+        languageOptions: { globals: { ...globals.serviceworker } },
+    },
+    {
         files: ['tests/**/*.js', '*.config.js'],
         languageOptions: {
             ecmaVersion: 2022,
             sourceType: 'commonjs',
-            // Колбэки page.evaluate выполняются в браузере.
-            globals: { ...globals.node, ...globals.browser },
+            // Колбэки page.evaluate/worker.evaluate выполняются в браузере и в service worker расширения.
+            globals: { ...globals.node, ...globals.browser, chrome: 'readonly' },
         },
     },
     {

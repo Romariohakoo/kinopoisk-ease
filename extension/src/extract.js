@@ -6,7 +6,16 @@
 (function (root) {
     'use strict';
 
-    const { collapseSpaces, cleanTitle, parseRating, parseDuration, parseTitlePath } = root.KPE;
+    const {
+        collapseSpaces,
+        cleanTitle,
+        parseTitleMeta,
+        describeKind,
+        parseSeasons,
+        parseRating,
+        parseDuration,
+        parseTitlePath,
+    } = root.KPE;
 
     const text = (el) => (el ? collapseSpaces(el.textContent) : '');
 
@@ -50,13 +59,25 @@
         return '';
     }
 
-    function extractTitle(doc, ld) {
+    /** Полный заголовок вместе с хвостом «(сериал, 2011 – 2019)». */
+    function rawTitle(doc, ld) {
         return (
-            cleanTitle(meta(doc, 'og:title')) ||
-            cleanTitle(text(doc.querySelector('h1[itemprop="name"], h1[class*="styles_title"]'))) ||
-            cleanTitle(ld && ld.name) ||
-            cleanTitle(doc.title.split(' — ')[0])
+            meta(doc, 'og:title') ||
+            text(doc.querySelector('h1[itemprop="name"], h1[class*="styles_title"]')) ||
+            collapseSpaces(ld && ld.name) ||
+            collapseSpaces(doc.title.split(' — ')[0])
         );
+    }
+
+    function extractSeasons(doc) {
+        for (const el of doc.querySelectorAll('[class*="eason"], a[href*="/episodes/"]')) {
+            const value = text(el);
+            if (value.length < 40) {
+                const count = parseSeasons(value);
+                if (count) return count;
+            }
+        }
+        return null;
     }
 
     function extractPoster(doc, ld) {
@@ -117,14 +138,27 @@
         return null;
     }
 
-    function extractFilmData(doc) {
+    /** @param {{type: string}} target — чтобы отличать фильм от сериала, если страница молчит. */
+    function extractFilmData(doc, target) {
         const ld = readJsonLd(doc);
+        const raw = rawTitle(doc, ld);
+        const { years, kindHint } = parseTitleMeta(raw);
+        const type = (target && target.type) || (ld && ld['@type'] === 'TVSeries' ? 'series' : 'film');
+        const tableYear = /(?:18|19|20)\d{2}/.exec(tableValue(doc, 'Год производства'));
         return {
-            title: extractTitle(doc, ld),
+            title: cleanTitle(raw),
             poster: extractPoster(doc, ld),
             rating: extractRating(doc, ld),
             duration: extractDuration(doc, ld),
             description: extractDescription(doc, ld),
+            year: years || (tableYear ? tableYear[0] : ''),
+            kind: describeKind({
+                type,
+                kindHint,
+                genre: tableValue(doc, 'Жанр') || (ld && [].concat(ld.genre || []).join(', ')),
+            }),
+            seasons: type === 'series' ? extractSeasons(doc) : null,
+            series: type === 'series',
         };
     }
 
