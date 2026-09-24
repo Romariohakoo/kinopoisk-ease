@@ -87,3 +87,14 @@ fabric.properties
 .idea/kinopoisk-ease.iml
 .idea/modules.xml
 .idea/vcs.xml
+
+### Node / сборка / тесты
+node_modules/
+dist/
+test-results/
+playwright-report/
+*.zip
+
+### macOS / Windows
+.DS_Store
+Thumbs.db

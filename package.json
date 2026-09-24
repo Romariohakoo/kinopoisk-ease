@@ -1,10 +1,29 @@
 {
   "name": "kinopoisk-ease",
-  "version": "1.0.0",
-  "description": "",
-  "main": "content.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "version": "1.1.0",
+  "description": "Браузерное расширение: плашка для быстрого перехода к просмотру фильма или сериала на Кинопоиске",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
   },
-  "private": true
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "node --test tests/unit/lib.test.js",
+    "test:e2e": "playwright test",
+    "icons": "node scripts/icons.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.56.1",
+    "eslint": "^10.11.0",
+    "fflate": "^0.8.3",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.9"
+  }
 }

@@ -1,0 +1,502 @@
+/*
+ * Стили живут внутри Shadow DOM: наружу не протекают, снаружи не приходят.
+ * :host { all: initial } обрезает и то, что наследуется от страницы (font-size, color, line-height…).
+ * Шрифты (KPE Manrope и др.) подключаются из widget.js через FontFace API.
+ */
+
+:host {
+  all: initial;
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  display: block;
+  max-width: calc(100vw - 48px);
+  color: #e0e2ea;
+  font-family:
+    'KPE Manrope',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Arial,
+    sans-serif;
+  font-size: 14px;
+  line-height: normal;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.stage {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---------- Общая подложка ---------- */
+
+.surface {
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  background-color: #090d1a;
+  border-radius: 20px;
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.5),
+    0 1px 6px rgba(0, 0, 0, 0.2);
+}
+
+.surface.is-entering {
+  animation: slide-in 0.4s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.surface.is-fading-in {
+  animation: fade-in 0.3s ease-in both;
+}
+
+.surface.is-leaving {
+  pointer-events: none;
+  animation: slide-out 0.25s ease-in both;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- Загрузка ---------- */
+
+.loading {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Карточка ---------- */
+
+.background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bg-image {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.45;
+}
+
+.bg-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to left, rgba(9, 13, 26, 0.4) 30%, transparent 100%),
+    linear-gradient(to top, rgba(9, 13, 26, 0.6), transparent 100%);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  padding: 15px;
+}
+
+.poster-container {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.poster-image {
+  display: block;
+  width: 100px;
+  height: 150px;
+  border-radius: 10px;
+  object-fit: cover;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.poster-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+}
+
+.poster-footer {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+  font-weight: 400;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.poster-footer:hover {
+  color: white;
+}
+
+.media-wrapper {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 15px;
+  min-width: 0;
+  max-width: 280px;
+}
+
+.media-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  margin: 0 34px 4px 0;
+  color: white;
+  font-family: 'KPE Montserrat Alternates', 'KPE Manrope', system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.chips {
+  display: flex;
+  gap: 2px;
+  width: fit-content;
+  overflow: hidden;
+  border-radius: 100px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  font-family: 'KPE Roboto', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.chip:first-child {
+  padding-left: 7px;
+}
+
+.chip:last-child {
+  padding-right: 7px;
+}
+
+.description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* ---------- Кнопки ---------- */
+
+.button-row {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 3px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 100px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  border: none;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  color: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.button:active {
+  transform: scale(0.98);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.button.first {
+  flex: 1 1 auto;
+  padding: 8px 20px;
+}
+
+.button.last {
+  flex: none;
+  padding: 0 12px 0 8px;
+}
+
+.button.last.text {
+  padding: 8px 16px 8px 12px;
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 100px;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.close-button:active {
+  transform: scale(0.9);
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: -2px;
+}
+
+/* ---------- Свёрнутая плашка ---------- */
+
+.pill {
+  padding: 6px;
+  border-radius: 100px;
+}
+
+.pill .button.first {
+  padding: 8px 18px 8px 16px;
+  font-size: 15px;
+}
+
+.pill .button.last {
+  padding: 0 12px 0 10px;
+}
+
+/* ---------- Настройки ---------- */
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.settings .title {
+  margin-bottom: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+.input {
+  width: 100%;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: white;
+  font: inherit;
+  font-size: 14px;
+}
+
+.input:focus-visible {
+  border-color: rgba(255, 255, 255, 0.6);
+  outline: none;
+}
+
+.input[aria-invalid='true'] {
+  border-color: #ff6b6b;
+}
+
+.hint {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.hint.is-error {
+  color: #ff8a8a;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: white;
+  cursor: pointer;
+}
+
+/* ---------- Узкие экраны ---------- */
+
+@media (max-width: 560px) {
+  :host {
+    top: 12px;
+    right: 12px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .content {
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .poster-image {
+    width: 72px;
+    height: 108px;
+  }
+
+  .poster-footer {
+    font-size: 11px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .description {
+    font-size: 13px;
+    -webkit-line-clamp: 4;
+  }
+
+  .close-button {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surface.is-entering,
+  .surface.is-fading-in,
+  .surface.is-leaving {
+    animation: none;
+  }
+
+  .button,
+  .close-button {
+    transition: none;
+  }
+}
